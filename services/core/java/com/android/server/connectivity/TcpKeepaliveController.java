@@ -41,6 +41,7 @@ import android.os.Handler;
 import android.os.MessageQueue;
 import android.os.Messenger;
 import android.system.ErrnoException;
+import android.system.Int32Ref;
 import android.system.Os;
 import android.util.Log;
 import android.util.SparseArray;
@@ -305,8 +306,9 @@ public class TcpKeepaliveController {
 
     private static boolean isReceiveQueueEmpty(FileDescriptor fd)
             throws ErrnoException {
-        final int result = Os.ioctlInt(fd, SIOCINQ);
-        if (result != 0) {
+        Int32Ref result = new Int32Ref(-1);
+        Os.ioctlInt(fd, SIOCINQ, result);
+        if (result.value != 0) {
             Log.e(TAG, "Read queue has data");
             return false;
         }
@@ -315,8 +317,9 @@ public class TcpKeepaliveController {
 
     private static boolean isSendQueueEmpty(FileDescriptor fd)
             throws ErrnoException {
-        final int result = Os.ioctlInt(fd, SIOCOUTQ);
-        if (result != 0) {
+        Int32Ref result = new Int32Ref(-1);
+        Os.ioctlInt(fd, SIOCOUTQ, result);
+        if (result.value != 0) {
             Log.e(TAG, "Write queue has data");
             return false;
         }
